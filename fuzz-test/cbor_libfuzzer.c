@@ -30,6 +30,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     if (cb && (err.err == CN_CBOR_NO_ERROR)) {
 
+        /* Why do we need at least one more byte here? */
+        uint8_t *encoded = (uint8_t *) malloc(size + 1);
+
         /* A byte or string may not point outside our buffer. */
         if (cb->type == CN_CBOR_TEXT) {
             assert(((uint8_t *)&cb->v.str[cb->length]) <= ((uint8_t *)&data[size]));
@@ -38,9 +41,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         if (cb->type == CN_CBOR_BYTES) {
             assert(((uint8_t *)&cb->v.bytes[cb->length]) <= ((uint8_t *)&data[size]));
         }
-
-        /* Why do we need at least one more byte here? */
-        uint8_t *encoded = (uint8_t *) malloc(size + 1);
 
         if (encoded) {
             enc_sz = cn_cbor_encoder_write(encoded, 0, size + 1, cb);
@@ -83,7 +83,9 @@ int main(void) {
 
     memcpy(cpy, tmp_buffer, size);
 
-    return LLVMFuzzerTestOneInput(cpy, (size_t) size);
+    int ret = LLVMFuzzerTestOneInput(cpy, (size_t) size);
+    free(cpy);
+    return ret;
 
 }
 

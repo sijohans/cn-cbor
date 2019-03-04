@@ -1,6 +1,5 @@
 
-
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS += -Wall -Wextra -Werror
 INCLUDES = -I../include
 SRCS = cbor_libfuzzer.c ../src/cn-cbor.c ../src/cn-encoder.c
 DEPS = ../include/cn-cbor/cn-cbor.h ../src/cbor.h Makefile
